@@ -13,14 +13,14 @@ public final class BukkitUtil {
 		OfflinePlayer p = null;
 		OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
 		for (OfflinePlayer offlinePlayer : offlinePlayers) {
-			if (offlinePlayer.getName().toLowerCase() == playerName.toLowerCase()) {
+			if (offlinePlayer.getName().equalsIgnoreCase(playerName)) {
 				if (p != null) {
 					throw new CommandException("Found multiple players named \"" + playerName + "\". Try using a UUID instead.");
 				}
 				p = offlinePlayer;
 			}
 		}
-		if (p == null || !p.hasPlayedBefore()) {
+		if (p == null) {
 			try {
 				UUID uuid = UUID.fromString(playerName);
 				p = Bukkit.getOfflinePlayer(uuid);
@@ -28,7 +28,7 @@ public final class BukkitUtil {
 				throw new CommandException("Invalid UUID format \""+playerName+"\"");
 			}
 		}
-		if (p == null || !p.hasPlayedBefore()) {
+		if (p == null) {
 			throw new CommandException ("Player \""+playerName+"\" does not exist.");
 		}
 		return p;

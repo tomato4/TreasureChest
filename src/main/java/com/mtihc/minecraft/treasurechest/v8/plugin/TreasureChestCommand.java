@@ -2,11 +2,7 @@ package com.mtihc.minecraft.treasurechest.v8.plugin;
 
 import java.util.Collection;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -124,8 +120,8 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		OfflinePlayer player = null;
 		player = BukkitUtil.findOfflinePlayer(playerName);
-		if(player == null || !player.hasPlayedBefore()) {
-			throw new CommandException("Player \"" + playerName + "\" does not exist.");
+		if(player == null) {
+			throw new CommandException("Hrac \"" + playerName + "\" neexistuje!");
 		}
 		
 		World world;
@@ -150,12 +146,12 @@ public class TreasureChestCommand extends SimpleCommand {
 			count = found.size();
 		}
 		int total = manager.getTreasureLocations(world.getName()).size();
-		String message = count + " out of " + total + " treasures";
+		String message = count + " z " + total + " truhel.";
 		if(other) {
-			sender.sendMessage(ChatColor.GOLD + "Player " + ChatColor.WHITE + playerName + ChatColor.GOLD + " has found " + message);
+			sender.sendMessage(ChatColor.YELLOW + "Hrac " + ChatColor.BOLD + playerName + ChatColor.RESET + ChatColor.YELLOW + " nalezl " + message);
 		}
 		else {
-			sender.sendMessage(ChatColor.GOLD + "You have found " + message);
+			sender.sendMessage(ChatColor.YELLOW + "Nalezl jsi " + message);
 		}
 		
 		
@@ -170,8 +166,8 @@ public class TreasureChestCommand extends SimpleCommand {
 		}
 	
 		if (args.length > 1) {
-			sender.sendMessage(ChatColor.RED
-					+ "Expected only the optional page number.");
+			sender.sendMessage(ChatColor.YELLOW
+					+ "Ocekavano pouze cislo stranky!");
 			sender.sendMessage(getUsage());
 			return;
 		}
@@ -198,17 +194,17 @@ public class TreasureChestCommand extends SimpleCommand {
 		int pageTotal = total / totalPerPage + 1;
 	
 		if (page < 1 || page > pageTotal) {
-			throw new CommandException("Page " + page
-					+ " does not exist.");
+			sender.sendMessage(ChatColor.YELLOW + "Strana " + page
+					+ " neexistuje!");
+			return;
 		}
 	
-		sender.sendMessage(ChatColor.GOLD
-				+ "List of all found treasures (page " + page + "/" + pageTotal
-				+ "):");
+		sender.sendMessage(ChatColor.YELLOW
+				+ "List vsech nalezenych truhel (strana " + ChatColor.BOLD + page + "/" + pageTotal + ChatColor.RESET + ChatColor.YELLOW + "):");
 	
 		if (found == null || found.isEmpty()) {
-			sender.sendMessage(ChatColor.RED
-					+ "You have not found any treasures yet.");
+			sender.sendMessage(ChatColor.YELLOW
+					+ "Zatim jsi nenalezl zadne truhly!");
 		} else {
 	
 			Location[] idArray = found.toArray(new Location[total]);
@@ -221,15 +217,12 @@ public class TreasureChestCommand extends SimpleCommand {
 					continue;
 				}
 				// send coordinates
-				sender.sendMessage("  " + ChatColor.GOLD + (i + 1) + ". "
-						+ ChatColor.WHITE + loc.getWorld().getName() + ChatColor.GRAY + " x " + ChatColor.WHITE 
-						+ loc.getBlockX() + ChatColor.GRAY + " y " + ChatColor.WHITE + loc.getBlockY() + ChatColor.GRAY + " z " + ChatColor.WHITE
-						+ loc.getBlockZ());
+				sender.sendMessage("" + ChatColor.YELLOW + (i + 1) + ". " + ChatColor.RESET + ChatColor.BOLD + loc.getWorld().getName() + ChatColor.RESET + " (" + loc.getBlockX() + "/" + loc.getBlockY() + "/" + loc.getBlockZ() + ")");
 			}
 	
 			if(pageTotal > 1) {
 				int nextPage = (page == pageTotal ? 1 : page + 1);
-				sender.sendMessage(ChatColor.GOLD + "To see the next page, type: "
+				sender.sendMessage(ChatColor.YELLOW + "Pro dalsi stranu pouzij: "
 						+ ChatColor.WHITE
 						+ getUsage().replace("[page]", String.valueOf(nextPage)));
 			}
@@ -244,15 +237,16 @@ public class TreasureChestCommand extends SimpleCommand {
 		}
 		
 		if (args.length > 1) {
-			sender.sendMessage(ChatColor.RED
-					+ "Expected only the optional page number.");
+			sender.sendMessage(ChatColor.YELLOW
+					+ "Ocekavano pouze cislo stranky!");
 			sender.sendMessage(getUsage());
 			return;
 		}
 	
 	
 		if(!sender.hasPermission(Permission.LIST_ALL.getNode())) {
-			throw new CommandException("You don't have permission to list all treasures.");
+			sender.sendMessage(ChatColor.YELLOW + "Nemas prava!");
+			return;
 		}
 		
 	
@@ -272,19 +266,19 @@ public class TreasureChestCommand extends SimpleCommand {
 		int pageTotal = total / totalPerPage + 1;
 	
 		if (page < 1 || page > pageTotal) {
-			throw new CommandException("Page " + page
-					+ " does not exist.");
+			sender.sendMessage("Strana " + page
+					+ " neexistuje!");
+			return;
 		}
 	
 		
 	
 		if (allChests == null || allChests.isEmpty()) {
-			sender.sendMessage(ChatColor.RED
-					+ "There are no treasures yet.");
+			sender.sendMessage(ChatColor.YELLOW
+					+ "Zatim tu nejsou zadne truhly!");
 		} else {
-			sender.sendMessage(ChatColor.GOLD
-					+ "List of all treasures on this server (page " + page + "/" + pageTotal
-					+ "):");
+			sender.sendMessage(ChatColor.YELLOW
+					+ "List vsech truhel na serveru (strana " + ChatColor.BOLD + page + "/" + pageTotal + ChatColor.RESET + ChatColor.YELLOW + "):");
 			Location[] idArray = allChests.toArray(new Location[total]);
 			int startIndex = (page - 1) * totalPerPage;
 			int endIndex = startIndex + totalPerPage;
@@ -296,15 +290,12 @@ public class TreasureChestCommand extends SimpleCommand {
 				}
 				
 				// send coordinates
-				sender.sendMessage("  " + ChatColor.GOLD + (i + 1) + ". "
-						+ ChatColor.WHITE + loc.getWorld().getName() + ChatColor.GRAY + " x " + ChatColor.WHITE 
-						+ loc.getBlockX() + ChatColor.GRAY + " y " + ChatColor.WHITE + loc.getBlockY() + ChatColor.GRAY + " z " + ChatColor.WHITE
-						+ loc.getBlockZ());
+				sender.sendMessage("" + ChatColor.YELLOW + (i + 1) + ". " + ChatColor.RESET + ChatColor.BOLD + loc.getWorld().getName() + ChatColor.RESET + " (" + loc.getBlockX() + "/" + loc.getBlockY() + "/" + loc.getBlockZ() + ")");
 			}
 	
 			if(pageTotal > 1) {
 				int nextPage = (page == pageTotal ? 1 : page + 1);
-				sender.sendMessage(ChatColor.GOLD + "To see the next page, type: "
+				sender.sendMessage(ChatColor.YELLOW + "Pro dalsi stranu pouzij: "
 						+ ChatColor.WHITE
 						+ getUsage().replace("[page]", String.valueOf(nextPage)));
 			}
@@ -322,11 +313,13 @@ public class TreasureChestCommand extends SimpleCommand {
 		}
 
 		if(!sender.hasPermission(Permission.DEL.getNode())) {
-			throw new CommandException("You don't have permission to delete treasures");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		if(args != null && args.length > 0) {
-			throw new CommandException("Expected no arguments.");
+			sender.sendMessage("Neocekavany argument!");
+			return;
 		}
 		
 		Player player = (Player) sender;
@@ -352,12 +345,14 @@ public class TreasureChestCommand extends SimpleCommand {
 	
 	
 		if(!sender.hasPermission(Permission.SET.getNode())) {
-			throw new CommandException("You don't have permission to create treasures.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		
 		if(args != null && args.length > 0) {
-			throw new CommandException("Expected no arguments");
+			sender.sendMessage("Neocekavany argument!");
+			return;
 		}
 		
 		Player player = (Player) sender;
@@ -379,12 +374,14 @@ public class TreasureChestCommand extends SimpleCommand {
 	
 	
 		if(!sender.hasPermission(Permission.SET.getNode())) {
-			throw new CommandException("You don't have permission to create treasures.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		
 		if(args != null && args.length > 0) {
-			throw new CommandException("Expected no arguments");
+			sender.sendMessage("Neocekavany argument!");
+			return;
 		}
 		
 		Player player = (Player) sender;
@@ -407,7 +404,8 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 	
 		if(!sender.hasPermission(Permission.RANDOM.getNode())) {
-			throw new CommandException("You don't have permission to make a treasure randomized.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		
@@ -482,7 +480,8 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 	
 		if(!sender.hasPermission(Permission.UNLIMITED.getNode())) {
-			throw new CommandException("You don't have permission to make treasure unlimited.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		
@@ -521,7 +520,8 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 	
 		if(!sender.hasPermission(Permission.IGNORE_PROTECTION.getNode())) {
-			throw new CommandException("You don't have permission to make a treasure ignore protection by other plugins.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		
@@ -560,7 +560,8 @@ public class TreasureChestCommand extends SimpleCommand {
 	
 	
 		if(!sender.hasPermission(Permission.SET.getNode())) {
-			throw new CommandException("You don't have permission to edit a treasure's messages.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		
@@ -641,7 +642,8 @@ public class TreasureChestCommand extends SimpleCommand {
 	
 	
 		if(!sender.hasPermission(Permission.SET.getNode())) {
-			throw new CommandException("You don't have permission to set a treasure's forget time.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		
@@ -713,13 +715,15 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 
 		if(!sender.hasPermission(Permission.FORGET.getNode())) {
-			throw new CommandException("You don't have permission to make a treasure forget that you've found it.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		
 		boolean other = !sender.getName().equalsIgnoreCase(playerName);
 		if(other && !sender.hasPermission(Permission.FORGET_OTHERS.getNode())) {
-			throw new CommandException("You don't have permission to make a treasure forget that a player has found it.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		OfflinePlayer p = null;
@@ -758,7 +762,8 @@ public class TreasureChestCommand extends SimpleCommand {
 
 
 		if(!sender.hasPermission(Permission.FORGET_ALL.getNode())) {
-			throw new CommandException("You don't have permission to make a treasure forget that anybody has found it.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		
@@ -791,7 +796,8 @@ public class TreasureChestCommand extends SimpleCommand {
 	public void reload(CommandSender sender, String[] args) throws CommandException {
 
 		if(!sender.hasPermission(Permission.FORGET_ALL.getNode())) {
-			throw new CommandException("You don't have permission to reload the config.");
+			sender.sendMessage("Nemas prava!");
+			return;
 		}
 		
 		
